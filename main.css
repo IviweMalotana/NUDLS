@@ -19,9 +19,12 @@
 }
 
 input[type="button"]{
-    height: 100px;
+    height: 80px;
     width: 100px;
-    color: black;
-    background-color: grey;
+    color: white;
+    background-color: black;
+    border-radius: 10px;
+    border: none;
+    cursor:pointer;
 }
 
