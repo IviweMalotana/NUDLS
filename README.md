@@ -24,11 +24,17 @@
             "times_moved":[],
             "is_hungry":false, 
             "current_location":""
-        } 
+###### } 
 ###### ZoneModel:
-###### {"id":"", "status":status}
+###### {
+            "id":"",
+            "status":status
+###### }
 ###### StatusModel:
-###### {"safe":false,"maintenance":false}
+###### {
+            "safe":false,
+            "maintenance":false
+###### }
 ###### Based on the DinosaurModel location at the current time, herbivore status and hunger status, the StatusModel of the ZoneModel would be determined. 
 ###### If I had to do it again, I would understand comparison algorithms. This is where I stopped, I couldn't compare the dates and times to update the current 
 ###### location of each dinosaur. 
