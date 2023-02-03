@@ -2,8 +2,8 @@
 
 ## a. How to setup code and run
 ### Unzip folder (NUDLS.zip) and open with VS code
-### Run and debug 
-### When page loads, click button to run code
+### Press F5 to run
+### When page loads, click "Initialize" button to run code
 
 ## b. Briefly explain how you approached the problem
 ### i. What you would do differently if you had to do it again
