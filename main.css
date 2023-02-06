@@ -1,30 +1,111 @@
-.block{
-    border:black 1px solid;
-    width:50px;
-    height: 50px;
+body{
+    background-color: #F0F4F7;
+    height: 100vh;
+    width: 100vw;
+}
+
+.logo-container{
+    height: 160px;
+    width: 800px;
+    margin-left: 20px;
+    margin-top: 10px;
+}
+.logo{
+    height: 100%;
+    width: 100%;
+    background-image: url("https://storage.googleapis.com/root-bank/dinoparks/dinoparks-logo.png");
+    background-repeat: no-repeat;
+    object-fit: contain;
+}
+
+.main-container{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+.white-box{
+    background-color: white;
+    margin-left: 50px;
+    margin-top: 50px;
+    width: 750px;
+    height: 500px;
+}
+
+.heading{
     color: black;
-    font-size: 11px;
+    font-size: 16px;
+    text-align: left;
+    width:40%;
+    margin-left:10%;
+    font-weight: 600;
+}
+
+.date{
+    color:lightgrey;
+    font-weight: 800;
+    width: 40%;
+    margin-right: 10%;
+    text-align: end;
+    font-size: 14px;
+}
+.green{
+    width:25px;
+    height: 25px;
+    background-color: #51B687;
+    border:solid lightgrey 1px;
+}
+
+.red{
+    width:25px;
+    height: 25px;
+    background-color:red;
+    border:solid lightgrey 1px;
+}
+
+.top{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.mid{
+    display:flex;
+}
+
+.left{
+    width: 40px;
+    margin-left: 10px;
+    height: 400px; 
 }
 
 .grid{
-    height: 800px;
-    width: 1300px;
-    
+    height: 400px;
+    width: 650px;
 }
 
-.rows{
-    height: 50px;
-    width: 1300px;
+
+.bottom{
+    width: 650px;
+    margin-left: 50px;
+    height:50px;
     display: flex;
 }
 
-input[type="button"]{
-    height: 80px;
-    width: 100px;
-    color: white;
-    background-color: black;
-    border-radius: 10px;
-    border: none;
-    cursor:pointer;
+.block{
+    width:25px;
+    height: 25px;
+    color: lightgrey;
+    font-size: 12px;
+    background-color: white;
+    text-align: center;
 }
+
+.rows{
+    height: 25px;
+    width: 650px;
+    display: flex;
+    
+}
+
 

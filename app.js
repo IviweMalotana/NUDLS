@@ -1,20 +1,22 @@
 var all_data;
 var allAnimals = [];
-var allEnvironments = [];
+var zones = [];
 var dinoData = [];
 var current_hour;
 var current_day;
 var current_month;
 var current_year;
 
-async function Initialize(){
+window.onload = async function() {
     await InitializeGrid();
     await GetAllData();
     await GetAllAnimals();
     await GetCurrentDateTime();
     await DetermineHunger();
     await DinoLocation();
-}
+    await UpdateZones();
+    await Colour();
+};
 
 async function GetAllData() {
     
@@ -24,24 +26,21 @@ async function GetAllData() {
 
 async function InitializeGrid(){
 
-    for (var i=0;i<=15;i++){
+    for (var i=1;i<=16;i++){
 
-        var row_name = "row"+i.toString();
-
-        var row = document.getElementById(row_name);
-
-        let A = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+        let arr = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
              
-        for (let j = 1; j <= 26; j++) {
+        for (let j = 0; j <= 25; j++) {
     
-            let tag = document.createElement("div");
-            tag.id = A[j]+i.toString();
-            tag.className = "block";
-            row.append(tag);
+            var thisZone = {
+                "id":arr[j]+i.toString(),
+                "maintenance":false,
+                "dangerous":false
+            }
             
+            zones.push(thisZone);
         }
     }
-
 }
 
 async function GetAllAnimals(){
@@ -115,16 +114,13 @@ async function GetAllAnimals(){
             "locations":dino_location,
             "times_moved":dino_location_updated,
             "is_hungry":[],
-            "moved_actions":[],
-            "current_location":[]
+            "current_location":""
         }
 
         dinoData.push(thisDino);
         
 
     }
-
-    console.log(dinoData);
     
 }
 
@@ -135,6 +131,11 @@ async function GetCurrentDateTime(){
     current_day = parseInt(date.getDate());
     current_month = parseInt(date.getMonth()+1);
     current_year = parseInt(date.getFullYear());
+
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date_str = current_day.toString()+" "+monthNames[date.getMonth()]+" "+current_year.toString();
+    document.getElementById("date").innerHTML = date_str;
 }
 
 async function DetermineHunger(){
@@ -144,54 +145,61 @@ async function DetermineHunger(){
 
         var dino = dinoData[i];
         
-        for (var j=0;j<dino.times_fed.length;j++){
+        if(dino.times_fed.length==0){
+            ishungry = true;
+            dino.is_hungry.push(ishungry);
+        }
+        else{
+            for (var j=0;j<dino.times_fed.length;j++){
 
-            var begin_date = dino.times_fed[j].split("T")[0].split("-");
-            var begin_time = dino.times_fed[j].split("T")[1].split(":");
-
-            var begin_hour = parseInt(begin_time[0]);
-            var begin_day = parseInt(begin_date[2]);
-            var begin_month = parseInt(begin_date[1]);
-            var begin_year = parseInt(begin_date[0]);
-
-            var hours_result = AddHours(begin_hour,dino.digestion_period);
-            overflow_days = hours_result[0];
-            sum_hours = hours_result[1];
-
-            var end_hour = sum_hours;
-            var days_result = AddDays(begin_day,begin_month,begin_year,overflow_days); 
-            overflow_months = days_result[0];
-            sum_days = days_result[1];
-
-            var end_day = sum_days;
-            var months_result = AddMonths(begin_month, overflow_months);
-
-            overflow_years = months_result[0];
-            sum_months = months_result[1];
-
-            var end_month = sum_months;
-            var end_year = AddYears(begin_year, overflow_years);
-
-            if ((begin_day<=current_day)&& (current_day<=end_day)){
-                if((begin_month==current_month) && (current_month==end_month)){
-                    if((begin_year==current_year) && (end_year==current_year)){
-                        ishungry = false;
+                var begin_date = dino.times_fed[j].split("T")[0].split("-");
+                var begin_time = dino.times_fed[j].split("T")[1].split(":");
+    
+                var begin_hour = parseInt(begin_time[0]);
+                var begin_day = parseInt(begin_date[2]);
+                var begin_month = parseInt(begin_date[1]);
+                var begin_year = parseInt(begin_date[0]);
+    
+                var hours_result = AddHours(begin_hour,dino.digestion_period);
+                overflow_days = hours_result[0];
+                sum_hours = hours_result[1];
+    
+                var end_hour = sum_hours;
+                var days_result = AddDays(begin_day,begin_month,begin_year,overflow_days); 
+                overflow_months = days_result[0];
+                sum_days = days_result[1];
+    
+                var end_day = sum_days;
+                var months_result = AddMonths(begin_month, overflow_months);
+    
+                overflow_years = months_result[0];
+                sum_months = months_result[1];
+    
+                var end_month = sum_months;
+                var end_year = AddYears(begin_year, overflow_years);
+    
+                if ((begin_day<=current_day)&& (current_day<=end_day)){
+                    if((begin_month==current_month) && (current_month==end_month)){
+                        if((begin_year==current_year) && (end_year==current_year)){
+                            ishungry = false;
+                        }
+                        else{
+                            ishungry = true;
+                        }
                     }
                     else{
                         ishungry = true;
                     }
+                    
                 }
                 else{
                     ishungry = true;
                 }
                 
+                dino.is_hungry.push(ishungry);
             }
-            else{
-                ishungry = true;
-            }
-            
-            dino.is_hungry.push(ishungry);
         }
+        
         dinoData[i] = dino;
 
     }
@@ -293,81 +301,120 @@ function AddYears(years, b){
 }
 
 async function DinoLocation(){    
-    
-    var currentStorage = [];
-    currentStorage.push(current_day);
-    currentStorage.push(current_month);
-    currentStorage.push(current_year);
-
+       
     for (var i=0;i<dinoData.length;i++){
+        
+        var storage = [];
+        var current_id = -1;
+
+        var current_datetime = {
+            "id":current_id,
+            "date": new Date(current_year, current_month, current_day)
+        }
 
         var dino = dinoData[i];
-        //var current_location = "";
         var storage = [];
         
-        storage.push(currentStorage);
-
+        storage.push(current_datetime);
+        
         for (var j=0;j<dino.times_moved.length;j++){
-
-            var thisStorage = [];
 
             var moved_date = dino.times_moved[j].split("T")[0].split("-");
 
-            thisStorage.push(parseInt(moved_date[2]));
-            thisStorage.push(parseInt(moved_date[1]));
-            thisStorage.push(parseInt(moved_date[0]));
-
-            storage.push(thisStorage);
+            var this_datetime = {
+                "id":j,
+                "date": new Date(parseInt(moved_date[0]), parseInt(moved_date[1]), parseInt(moved_date[2]))
+            }
+            storage.push(this_datetime);
         }
 
-        var addedstorage = [];
-        var notaddedstorage = [];
+        const sortedDates = [...storage].sort(
+            (objA, objB) => Number(objA.date) - Number(objB.date),
+        );
 
-        for (var k=0;k<storage.length-1;k++){
-            var after = CompareTwoDates(storage[k], storage[k+1]);
-            if(after==true){
-                addedstorage.push(storage[k]);
-            }
-            else{
-                addedstorage.push(storage[k+1]);
+        current_l = 0;
+        for (var l=0;l<sortedDates.length;l++){
+            if (sortedDates[l].id==-1){
+                current_l = l-1;
             }
         }
 
-        console.log(storage);
-        dino.moved_actions = storage;
-        
+        dino.current_location = dino.locations[current_l];      
         dinoData[i] = dino;
     }
     console.log(dinoData);
 }
 
-function CompareTwoDates(A,B){
+async function UpdateZones(){
+    for (var i=0;i<zones.length;i++){
+        var zone = zones[i];
 
-    var after = false;
-    if (B[2]>A[2]){
-        after = true;
-    }
-    else if(B[2]==A[2]){
-        if (B[1]>A[1]){
-            after = true;
-        }
-        else if (B[1]==A[1]){
-            if(B[0]>=A[0]){
-                after = true;
+        for (var j=0;j<dinoData.length;j++){
+            var dino = dinoData[j];
+
+            if (dino.current_location==zone.id){
+
+                var ishungry = false;
+                var k=0;
+                while(ishungry==false && k<dino.is_hungry.length){
+                    if (dino.is_hungry[k]==true){
+                        ishungry = true;
+                    }
+                    k++;
+                }
+
+                if(dino.herbivore==true){
+                    zone.dangerous = false;
+                }
+                else{
+                    if (ishungry==true){
+                        zone.dangerous = true;
+                    }
+                    else{
+                        zone.dangerous = false;
+                    }
+                }
+
             }
-            else{
-                after = false;
-            }
+            
         }
-        else{
-            after = false;
-        }
+        zones[i] = zone;
+        
     }
-    else{
-        after = false;
-    }
-
-    return after;
-
+    
 }
 
+async function Colour(){
+
+    var k=0;
+
+    while (k<zones.length){
+
+        for (var i=1;i<=16;i++){
+
+            var row_name = "row"+i.toString();
+    
+            var row = document.getElementById(row_name);
+            console.log(row);
+    
+            let arr = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+
+            for (let j = 0; j <= 25; j++) {
+
+                var zone = zones[k];
+
+                let tag = document.createElement("div");
+                tag.id = arr[j]+i.toString();
+                if(zone.dangerous==false){
+                    tag.className = "green";
+                }
+                else{
+                    tag.className = "red";
+                    
+                }
+                row.append(tag);
+                k++;
+            }
+        }
+    }
+}
